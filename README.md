@@ -17,5 +17,8 @@ or sign it with a protected key.
 The [integrity and threat-model guide](docs/INTEGRITY_AND_THREAT_MODEL.md)
 explains the record format, verification behaviour and ways to anchor a hash.
 
+For Python prerequisites, Windows/macOS/Linux test setup, a two-record example
+and common errors, see [Getting started](docs/GETTING_STARTED.md).
+
 Main idea to explain: each record commits to both its own content and the
 previous record. Changing one item breaks the chain from that point onward.
