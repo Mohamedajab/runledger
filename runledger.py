@@ -50,8 +50,12 @@ def append(path: Path, run_id: str, status: str, metrics: dict) -> dict:
               "recorded_utc": datetime.now(timezone.utc).isoformat(),
               "previous_sha256": records[-1]["sha256"] if records else GENESIS}
     record["sha256"] = digest(record)
-    with path.open("a", encoding="utf-8") as stream:
-        stream.write(json.dumps(record, sort_keys=True) + "\n")
+    with path.open("a+b") as stream:
+        if stream.tell():
+            stream.seek(-1, 2)
+            if stream.read(1) != b"\n":
+                stream.write(b"\n")
+        stream.write((json.dumps(record, sort_keys=True) + "\n").encode("utf-8"))
     return record
 
 

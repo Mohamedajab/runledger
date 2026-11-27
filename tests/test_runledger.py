@@ -25,3 +25,17 @@ def test_duplicate_run_id_is_rejected(tmp_path: Path):
     append(path, "run-1", "complete", {})
     with pytest.raises(ValueError, match="already exists"):
         append(path, "run-1", "complete", {})
+
+
+@pytest.mark.parametrize("ending", [b"", b"\n", b"\r\n"])
+def test_append_keeps_records_on_separate_lines(tmp_path: Path, ending: bytes):
+    path = tmp_path / "runs.jsonl"
+    first = append(path, "run-1", "complete", {"f1": 0.72})
+    original = path.read_bytes().rstrip(b"\r\n") + ending
+    path.write_bytes(original)
+
+    second = append(path, "run-2", "complete", {})
+
+    assert path.read_bytes().startswith(original)
+    assert [json.loads(line) for line in path.read_text().splitlines()] == [first, second]
+    assert verify(path) == (True, "valid chain with 2 records")
